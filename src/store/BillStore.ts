@@ -1,4 +1,4 @@
-import type { Item, Person, Split } from "../types";
+import type { Item, Person, Split, SplitMode } from "../types";
 
 // ── BillStore interface ───────────────────────────────────────────────────────
 //
@@ -8,7 +8,7 @@ import type { Item, Person, Split } from "../types";
 //     splits   { itemId, personId }   ← many-to-many join
 //
 //   Mutations enforce referential integrity:
-//     removePerson  → cascades splits, removes orphaned items
+//     removePerson  → cascades splits, removes orphaned items (that had splits)
 //     removeItem    → cascades splits
 //     unlinkPerson  → removes one split row only (item kept)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -22,15 +22,19 @@ export interface BillStore {
   // Settings
   tax: number;
   setTax: (v: number) => void;
-  fees: number;
-  setFees: (v: number) => void;
+  taxMode: SplitMode;
+  setTaxMode: (m: SplitMode) => void;
+  tip: number;
+  setTip: (v: number) => void;
+  tipMode: SplitMode;
+  setTipMode: (m: SplitMode) => void;
 
   // People mutations
   addPerson: (name: string) => void;
   removePerson: (personId: number) => void;
 
   // Item mutations
-  addItem: (name: string, cost: number, assignTo: number[]) => void;
+  addItem: (name: string, unitPrice: number, assignTo: number[], quantity?: number) => void;
   removeItem: (itemId: number) => void;
   unlinkPerson: (itemId: number, personId: number) => void;
   setItemSplit: (itemId: number, personId: number, included: boolean) => void;
@@ -45,9 +49,14 @@ export interface BillStore {
   // Calculations
   personSubtotal: (personId: number) => number;
   personTaxableSubtotal: (personId: number) => number;
+  personTaxShare: (personId: number) => number;
+  personTipShare: (personId: number) => number;
   personTotal: (personId: number) => number;
   grandTotal: number;
-  itemsTotal: number; // taxable only — used for tax $ ↔ % cross-computation
+  itemsTotal: number;        // taxable items total — for tax $ ↔ % conversion
+  allItemsCost: number;      // all items total — for tip $ ↔ % conversion
+  taxAmount: number;         // computed tax in dollars
+  tipAmount: number;         // computed tip in dollars
 
   // Reset
   clearAll: () => void;
