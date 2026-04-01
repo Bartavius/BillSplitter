@@ -9,8 +9,6 @@ type Props = Pick<
   | "items"
   | "tax"
   | "setTax"
-  | "fees"
-  | "setFees"
   | "personTotal"
   | "personTaxableSubtotal"
   | "grandTotal"
@@ -21,11 +19,10 @@ type Props = Pick<
 >;
 
 export function ResultsCard(props: Props) {
-  const { persons, setTax, setFees, personTotal, grandTotal, itemsTotal } = props;
+  const { persons, setTax, personTotal, grandTotal, itemsTotal } = props;
 
   const [taxPctStr, setTaxPctStr] = useState("");
   const [taxAmtStr, setTaxAmtStr] = useState("");
-  const [feesStr, setFeesStr] = useState("");
   const [exportDetailed, setExportDetailed] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -36,16 +33,13 @@ export function ResultsCard(props: Props) {
       setTaxPctStr(props.tax % 1 === 0 ? props.tax.toFixed(0) : props.tax.toFixed(2));
       setTaxAmtStr(props.itemsTotal > 0 ? (props.itemsTotal * props.tax / 100).toFixed(2) : "");
     }
-    if (props.fees > 0) {
-      setFeesStr(props.fees.toFixed(2));
-    }
   }, [props.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const exportData = {
     persons: props.persons,
     items: props.items,
     tax: props.tax,
-    fees: props.fees,
+    fees: 0,
     grandTotal: props.grandTotal,
     itemsTotal: props.itemsTotal,
     personTotal: props.personTotal,
@@ -105,23 +99,6 @@ export function ResultsCard(props: Props) {
           </div>
         </div>
 
-        {/* Tip + charges */}
-        <div className="flex flex-col gap-1">
-          <p className="text-xs text-gray-500 dark:text-zinc-400 text-center">Tip / Charges ($)</p>
-          <Input
-            placeholder="$"
-            className="w-24"
-            classNames={{ inputWrapper: "dark:bg-zinc-700" }}
-            type="number"
-            min="0"
-            step="0.01"
-            value={feesStr}
-            onChange={(e) => {
-              setFeesStr(e.target.value);
-              setFees(parseFloat(e.target.value) || 0);
-            }}
-          />
-        </div>
       </div>
 
       {persons.length > 0 ? (

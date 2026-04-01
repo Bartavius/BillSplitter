@@ -1,11 +1,13 @@
-import type { Item, Person, Split } from "../types";
+import type { Item, Person, Split, SplitMode } from "../types";
 
 export interface PersistedState {
   persons: Person[];
   items: Item[];
   splits: Split[];
   tax: number;
-  fees: number;
+  taxMode: SplitMode;
+  tip: number;
+  tipMode: SplitMode;
   nextId: number;
 }
 

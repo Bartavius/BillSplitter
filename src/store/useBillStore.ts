@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Item, Person, Split } from "../types";
+import type { Item, Person, Split, SplitMode } from "../types";
 import type { BillStore } from "./BillStore";
 import type { BillRepository } from "./BillRepository";
 import { LocalStorageRepository } from "./LocalStorageRepository";
@@ -11,8 +11,10 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   const [items, setItems]     = useState<Item[]>([]);
   const [splits, setSplits]   = useState<Split[]>([]);
   const [nameSet, setNameSet] = useState<Set<string>>(new Set());
-  const [tax, setTax]   = useState(0);
-  const [fees, setFees] = useState(0);
+  const [tax, setTax]         = useState(0);
+  const [taxMode, setTaxMode] = useState<SplitMode>("proportional");
+  const [tip, setTip]         = useState(0);
+  const [tipMode, setTipMode] = useState<SplitMode>("even");
   const [isLoading, setIsLoading] = useState(true);
   const nextId      = useRef(0);
   const initialized = useRef(false);
@@ -25,11 +27,14 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     repo.load().then((saved) => {
       if (saved) {
         setPersons(saved.persons);
-        setItems(saved.items);
+        // Backfill quantity for items persisted before this field existed
+        setItems(saved.items.map((i) => ({ ...i, quantity: i.quantity ?? 1 })));
         setSplits(saved.splits);
         setNameSet(new Set(saved.persons.map((p) => p.name.toLowerCase())));
-        setTax(saved.tax);
-        setFees(saved.fees);
+        setTax(saved.tax ?? 0);
+        setTaxMode(saved.taxMode ?? "proportional");
+        setTip(saved.tip ?? 0);
+        setTipMode(saved.tipMode ?? "even");
         nextId.current = saved.nextId;
       }
       initialized.current = true;
@@ -41,9 +46,9 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   useEffect(() => {
     if (!initialized.current) return;
     repo
-      .save({ persons, items, splits, tax, fees, nextId: nextId.current })
+      .save({ persons, items, splits, tax, taxMode, tip, tipMode, nextId: nextId.current })
       .catch(console.error);
-  }, [persons, items, splits, tax, fees]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [persons, items, splits, tax, taxMode, tip, tipMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Queries ──────────────────────────────────────────────────────────────
 
@@ -83,16 +88,25 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
       return s;
     });
     setSplits(remainingSplits);
-    setItems((prev) => prev.filter((i) => usedItemIds.has(i.id)));
+    // Only remove items that had splits and now have none left (keep unassigned items)
+    setItems((prev) => prev.filter((i) => {
+      const hadSplits = splits.some((s) => s.itemId === i.id);
+      return !hadSplits || usedItemIds.has(i.id);
+    }));
   };
 
   // ── Items ─────────────────────────────────────────────────────────────────
 
-  const addItem = (name: string, cost: number, assignTo: number[]) => {
-    if (isNaN(cost) || cost <= 0 || assignTo.length === 0) return;
+  // assignTo may be empty — items can exist without any assignment
+  const addItem = (name: string, unitPrice: number, assignTo: number[], quantity = 1) => {
+    if (isNaN(unitPrice) || unitPrice <= 0) return;
+    const qty = Math.max(1, Math.round(quantity));
+    const cost = unitPrice * qty;
     const itemId = newId();
-    setItems((prev) => [...prev, { id: itemId, name: name.trim(), cost, taxExempt: false }]);
-    setSplits((prev) => [...prev, ...assignTo.map((personId) => ({ itemId, personId }))]);
+    setItems((prev) => [...prev, { id: itemId, name: name.trim(), cost, quantity: qty, taxExempt: false }]);
+    if (assignTo.length > 0) {
+      setSplits((prev) => [...prev, ...assignTo.map((personId) => ({ itemId, personId }))]);
+    }
   };
 
   const removeItem = (itemId: number) => {
@@ -105,7 +119,9 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
 
   const setItemSplit = (itemId: number, personId: number, included: boolean) => {
     if (included) {
-      setSplits((prev) => [...prev, { itemId, personId }]);
+      // Avoid duplicate splits
+      const exists = splits.some((s) => s.itemId === itemId && s.personId === personId);
+      if (!exists) setSplits((prev) => [...prev, { itemId, personId }]);
     } else {
       unlinkPerson(itemId, personId);
     }
@@ -131,12 +147,31 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
       return sum + (n > 0 ? item.cost / n : 0);
     }, 0);
 
-  const personTotal = (personId: number): number =>
-    personSubtotal(personId) +
-    personTaxableSubtotal(personId) * (tax / 100) +
-    (persons.length > 0 ? fees / persons.length : 0);
-
   const itemsTotal = items.filter((i) => !i.taxExempt).reduce((sum, i) => sum + i.cost, 0);
+  const allItemsCost = items.reduce((sum, i) => sum + i.cost, 0);
+  const taxAmount = itemsTotal * (tax / 100);
+  const tipAmount = allItemsCost * (tip / 100);
+
+  const personTaxShare = (personId: number): number => {
+    if (taxMode === "proportional") {
+      return personTaxableSubtotal(personId) * (tax / 100);
+    }
+    // even split
+    return persons.length > 0 ? taxAmount / persons.length : 0;
+  };
+
+  const personTipShare = (personId: number): number => {
+    if (tipMode === "proportional") {
+      if (allItemsCost <= 0) return persons.length > 0 ? tipAmount / persons.length : 0;
+      return personSubtotal(personId) / allItemsCost * tipAmount;
+    }
+    // even split
+    return persons.length > 0 ? tipAmount / persons.length : 0;
+  };
+
+  const personTotal = (personId: number): number =>
+    personSubtotal(personId) + personTaxShare(personId) + personTipShare(personId);
+
   const grandTotal = persons.reduce((sum, p) => sum + personTotal(p.id), 0);
 
   // ── Reset ─────────────────────────────────────────────────────────────────
@@ -147,19 +182,23 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     setSplits([]);
     setNameSet(new Set());
     setTax(0);
-    setFees(0);
+    setTaxMode("proportional");
+    setTip(0);
+    setTipMode("even");
     nextId.current = 0;
     repo.clear().catch(console.error);
   };
 
   return {
     persons, items, splits,
-    tax, setTax, fees, setFees,
+    tax, setTax, taxMode, setTaxMode,
+    tip, setTip, tipMode, setTipMode,
     addPerson, removePerson,
     addItem, removeItem, unlinkPerson, setItemSplit, toggleTaxExempt,
     splitsForItem, splitsForPerson, personsForItem, itemsForPerson,
-    personSubtotal, personTaxableSubtotal, personTotal,
-    grandTotal, itemsTotal,
+    personSubtotal, personTaxableSubtotal,
+    personTaxShare, personTipShare, personTotal,
+    grandTotal, itemsTotal, allItemsCost, taxAmount, tipAmount,
     clearAll,
     isLoading,
   };

@@ -1,4 +1,6 @@
-import type { Mode } from "../types";
+// Legacy component — no longer used in the main UI
+
+type Mode = "simple" | "per-person" | "by-item";
 
 const MODE_LABELS: Record<Mode, string> = {
   simple: "Simple",
