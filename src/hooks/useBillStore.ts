@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Item, Person, Split, SplitMode } from "../types";
-import type { BillStore } from "./BillStore";
-import type { BillRepository } from "./BillRepository";
-import { LocalStorageRepository } from "./LocalStorageRepository";
+import type { BillStore } from "../store/BillStore";
+import type { BillRepository } from "../store/BillRepository";
+import { LocalStorageRepository } from "../store/LocalStorageRepository";
 
 const defaultRepo = new LocalStorageRepository();
 
