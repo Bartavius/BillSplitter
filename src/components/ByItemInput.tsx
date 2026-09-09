@@ -12,7 +12,15 @@ interface Props {
   personsForItem: (itemId: number) => Person[];
 }
 
-export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExempt, setItemSplit, personsForItem }: Props) {
+export function ByItemInput({
+  persons,
+  items,
+  addItem,
+  removeItem,
+  toggleTaxExempt,
+  setItemSplit,
+  personsForItem,
+}: Props) {
   const [itemName, setItemName] = useState("");
   const [cost, setCost] = useState("");
   const [checkedPersonIds, setCheckedPersonIds] = useState<number[]>([]);
@@ -39,7 +47,9 @@ export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExem
           classNames={{ inputWrapper: "dark:bg-zinc-700" }}
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+          }}
         />
         <Input
           placeholder="Cost"
@@ -50,7 +60,9 @@ export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExem
           step="0.01"
           value={cost}
           onChange={(e) => setCost(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+          }}
         />
       </div>
       <div className="mb-4">
@@ -62,7 +74,7 @@ export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExem
               isSelected={checkedPersonIds.includes(p.id)}
               onValueChange={(checked) =>
                 setCheckedPersonIds((prev) =>
-                  checked ? [...prev, p.id] : prev.filter((id) => id !== p.id)
+                  checked ? [...prev, p.id] : prev.filter((id) => id !== p.id),
                 )
               }
             >
@@ -87,10 +99,7 @@ export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExem
         </div>
       </div>
       <div className="flex justify-center mb-2">
-        <Button
-          onClick={submit}
-          isDisabled={!cost || checkedPersonIds.length === 0}
-        >
+        <Button onClick={submit} isDisabled={!cost || checkedPersonIds.length === 0}>
           Add Item
         </Button>
       </div>
@@ -123,7 +132,9 @@ export function ByItemInput({ persons, items, addItem, removeItem, toggleTaxExem
                       ÷ {whoSplits.length}
                     </span>
                     <button
-                      title={item.taxExempt ? "Tax exempt — click to remove" : "Click to mark tax exempt"}
+                      title={
+                        item.taxExempt ? "Tax exempt — click to remove" : "Click to mark tax exempt"
+                      }
                       className={`text-xs mr-2 rounded px-1 transition-opacity ${
                         item.taxExempt
                           ? "text-blue-400 opacity-100"

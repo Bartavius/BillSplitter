@@ -23,9 +23,7 @@ export function PerPersonInput({ persons, addItem }: Props) {
 
   return (
     <Card className="p-6 mb-6 w-full max-w-2xl dark:bg-zinc-800 dark:border dark:border-zinc-700">
-      <p className="text-sm text-gray-500 mb-4 text-center">
-        Select a person and add their items
-      </p>
+      <p className="text-sm text-gray-500 mb-4 text-center">Select a person and add their items</p>
       <div className="flex flex-wrap gap-3 justify-center items-end">
         <select
           className="border border-gray-200 dark:border-zinc-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-zinc-700 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-zinc-500"
@@ -34,7 +32,9 @@ export function PerPersonInput({ persons, addItem }: Props) {
         >
           <option value="">Select person…</option>
           {persons.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
           ))}
         </select>
         <Input
@@ -43,7 +43,9 @@ export function PerPersonInput({ persons, addItem }: Props) {
           classNames={{ inputWrapper: "dark:bg-zinc-700" }}
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+          }}
         />
         <Input
           placeholder="Cost"
@@ -54,7 +56,9 @@ export function PerPersonInput({ persons, addItem }: Props) {
           step="0.01"
           value={cost}
           onChange={(e) => setCost(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+          }}
         />
         <Button onClick={submit} isDisabled={selectedPersonId == null || !cost}>
           Add Item

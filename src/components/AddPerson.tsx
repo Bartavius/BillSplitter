@@ -21,7 +21,9 @@ export function AddPerson({ addPerson }: Props) {
         classNames={{ inputWrapper: "dark:bg-zinc-800" }}
         value={name}
         onChange={(e) => setName(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") submit();
+        }}
       />
       <Button onClick={submit}>Add Person</Button>
     </div>

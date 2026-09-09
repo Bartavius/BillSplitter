@@ -30,10 +30,11 @@ export function ResultsCard(props: Props) {
   useEffect(() => {
     if (props.isLoading) return;
     if (props.tax > 0) {
+      // oxlint-disable-next-line react/set-state-in-effect
       setTaxPctStr(props.tax % 1 === 0 ? props.tax.toFixed(0) : props.tax.toFixed(2));
-      setTaxAmtStr(props.itemsTotal > 0 ? (props.itemsTotal * props.tax / 100).toFixed(2) : "");
+      setTaxAmtStr(props.itemsTotal > 0 ? ((props.itemsTotal * props.tax) / 100).toFixed(2) : "");
     }
-  }, [props.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.isLoading]); // oxlint-disable-line react/exhaustive-deps
 
   const exportData = {
     persons: props.persons,
@@ -77,7 +78,7 @@ export function ResultsCard(props: Props) {
                 const pct = parseFloat(e.target.value) || 0;
                 setTaxPctStr(e.target.value);
                 setTax(pct);
-                setTaxAmtStr(itemsTotal > 0 ? (itemsTotal * pct / 100).toFixed(2) : "");
+                setTaxAmtStr(itemsTotal > 0 ? ((itemsTotal * pct) / 100).toFixed(2) : "");
               }}
             />
             <Input
@@ -98,14 +99,16 @@ export function ResultsCard(props: Props) {
             />
           </div>
         </div>
-
       </div>
 
       {persons.length > 0 ? (
         <>
           <div className="flex flex-row flex-wrap justify-center gap-3 mb-4">
             {persons.map((p) => (
-              <Card key={p.id} className="px-5 py-3 min-w-[120px] text-center dark:bg-zinc-700 dark:border dark:border-zinc-600">
+              <Card
+                key={p.id}
+                className="px-5 py-3 min-w-[120px] text-center dark:bg-zinc-700 dark:border dark:border-zinc-600"
+              >
                 <p className="font-semibold text-sm text-gray-700 dark:text-zinc-200">{p.name}</p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
                   ${personTotal(p.id).toFixed(2)}
@@ -115,7 +118,9 @@ export function ResultsCard(props: Props) {
           </div>
           <p className="text-center text-gray-500 dark:text-zinc-400 text-sm mb-5">
             Grand Total:{" "}
-            <span className="font-bold text-gray-900 dark:text-zinc-100">${grandTotal.toFixed(2)}</span>
+            <span className="font-bold text-gray-900 dark:text-zinc-100">
+              ${grandTotal.toFixed(2)}
+            </span>
           </p>
           <div className="flex flex-col items-center gap-2">
             <div className="flex flex-row border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden text-xs">
@@ -143,9 +148,7 @@ export function ResultsCard(props: Props) {
           </div>
         </>
       ) : (
-        <p className="text-center text-gray-400 text-sm">
-          Add people above to get started.
-        </p>
+        <p className="text-center text-gray-400 text-sm">Add people above to get started.</p>
       )}
     </Card>
   );

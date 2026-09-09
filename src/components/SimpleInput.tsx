@@ -29,7 +29,9 @@ export function SimpleInput({ persons, addItem }: Props) {
         >
           <option value="">Select person…</option>
           {persons.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
           ))}
         </select>
         <Input
@@ -41,7 +43,9 @@ export function SimpleInput({ persons, addItem }: Props) {
           step="0.01"
           value={cost}
           onChange={(e) => setCost(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") submit();
+          }}
         />
         <Button onClick={submit} isDisabled={selectedPersonId == null || !cost}>
           Add Price

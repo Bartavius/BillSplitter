@@ -8,15 +8,15 @@ const defaultRepo = new LocalStorageRepository();
 
 export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   const [persons, setPersons] = useState<Person[]>([]);
-  const [items, setItems]     = useState<Item[]>([]);
-  const [splits, setSplits]   = useState<Split[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [splits, setSplits] = useState<Split[]>([]);
   const [nameSet, setNameSet] = useState<Set<string>>(new Set());
-  const [tax, setTax]         = useState(0);
+  const [tax, setTax] = useState(0);
   const [taxMode, setTaxMode] = useState<SplitMode>("proportional");
-  const [tip, setTip]         = useState(0);
+  const [tip, setTip] = useState(0);
   const [tipMode, setTipMode] = useState<SplitMode>("even");
   const [isLoading, setIsLoading] = useState(true);
-  const nextId      = useRef(0);
+  const nextId = useRef(0);
   const initialized = useRef(false);
   const newId = () => nextId.current++;
 
@@ -52,7 +52,7 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
 
   // ── Queries ──────────────────────────────────────────────────────────────
 
-  const splitsForItem   = (itemId: number)   => splits.filter((s) => s.itemId   === itemId);
+  const splitsForItem = (itemId: number) => splits.filter((s) => s.itemId === itemId);
   const splitsForPerson = (personId: number) => splits.filter((s) => s.personId === personId);
 
   const personsForItem = (itemId: number): Person[] =>
@@ -89,10 +89,12 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     });
     setSplits(remainingSplits);
     // Only remove items that had splits and now have none left (keep unassigned items)
-    setItems((prev) => prev.filter((i) => {
-      const hadSplits = splits.some((s) => s.itemId === i.id);
-      return !hadSplits || usedItemIds.has(i.id);
-    }));
+    setItems((prev) =>
+      prev.filter((i) => {
+        const hadSplits = splits.some((s) => s.itemId === i.id);
+        return !hadSplits || usedItemIds.has(i.id);
+      }),
+    );
   };
 
   // ── Items ─────────────────────────────────────────────────────────────────
@@ -103,7 +105,10 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     const qty = Math.max(1, Math.round(quantity));
     const cost = unitPrice * qty;
     const itemId = newId();
-    setItems((prev) => [...prev, { id: itemId, name: name.trim(), cost, quantity: qty, taxExempt: false }]);
+    setItems((prev) => [
+      ...prev,
+      { id: itemId, name: name.trim(), cost, quantity: qty, taxExempt: false },
+    ]);
     if (assignTo.length > 0) {
       setSplits((prev) => [...prev, ...assignTo.map((personId) => ({ itemId, personId }))]);
     }
@@ -128,9 +133,7 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   };
 
   const toggleTaxExempt = (itemId: number) =>
-    setItems((prev) =>
-      prev.map((i) => (i.id === itemId ? { ...i, taxExempt: !i.taxExempt } : i))
-    );
+    setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, taxExempt: !i.taxExempt } : i)));
 
   // ── Calculations ──────────────────────────────────────────────────────────
 
@@ -163,7 +166,7 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   const personTipShare = (personId: number): number => {
     if (tipMode === "proportional") {
       if (allItemsCost <= 0) return persons.length > 0 ? tipAmount / persons.length : 0;
-      return personSubtotal(personId) / allItemsCost * tipAmount;
+      return (personSubtotal(personId) / allItemsCost) * tipAmount;
     }
     // even split
     return persons.length > 0 ? tipAmount / persons.length : 0;
@@ -190,15 +193,38 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   };
 
   return {
-    persons, items, splits,
-    tax, setTax, taxMode, setTaxMode,
-    tip, setTip, tipMode, setTipMode,
-    addPerson, removePerson,
-    addItem, removeItem, unlinkPerson, setItemSplit, toggleTaxExempt,
-    splitsForItem, splitsForPerson, personsForItem, itemsForPerson,
-    personSubtotal, personTaxableSubtotal,
-    personTaxShare, personTipShare, personTotal,
-    grandTotal, itemsTotal, allItemsCost, taxAmount, tipAmount,
+    persons,
+    items,
+    splits,
+    tax,
+    setTax,
+    taxMode,
+    setTaxMode,
+    tip,
+    setTip,
+    tipMode,
+    setTipMode,
+    addPerson,
+    removePerson,
+    addItem,
+    removeItem,
+    unlinkPerson,
+    setItemSplit,
+    toggleTaxExempt,
+    splitsForItem,
+    splitsForPerson,
+    personsForItem,
+    itemsForPerson,
+    personSubtotal,
+    personTaxableSubtotal,
+    personTaxShare,
+    personTipShare,
+    personTotal,
+    grandTotal,
+    itemsTotal,
+    allItemsCost,
+    taxAmount,
+    tipAmount,
     clearAll,
     isLoading,
   };

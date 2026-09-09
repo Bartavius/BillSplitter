@@ -14,7 +14,17 @@ export interface ExportData {
 }
 
 export function buildTextLines(data: ExportData, detailed: boolean): string[] {
-  const { persons, tax, fees, grandTotal, itemsTotal, personTotal, personTaxableSubtotal, itemsForPerson, splitsForItem } = data;
+  const {
+    persons,
+    tax,
+    fees,
+    grandTotal,
+    itemsTotal,
+    personTotal,
+    personTaxableSubtotal,
+    itemsForPerson,
+    splitsForItem,
+  } = data;
   const W = 32;
   const rpad = (label: string, value: string) =>
     label + " ".repeat(Math.max(1, W - label.length - value.length)) + value;
@@ -24,7 +34,7 @@ export function buildTextLines(data: ExportData, detailed: boolean): string[] {
     lines.push(rpad("Grand Total", `$${grandTotal.toFixed(2)}`));
     if (tax > 0) {
       const pct = tax % 1 === 0 ? tax.toFixed(0) : tax.toFixed(2);
-      lines.push(rpad("Tax", `${pct}%  ($${(itemsTotal * tax / 100).toFixed(2)})`));
+      lines.push(rpad("Tax", `${pct}%  ($${((itemsTotal * tax) / 100).toFixed(2)})`));
     }
     if (fees > 0) lines.push(rpad("Tip / Charges", `$${fees.toFixed(2)}`));
   };
@@ -45,7 +55,8 @@ export function buildTextLines(data: ExportData, detailed: boolean): string[] {
       const shareCount = splitsForItem(item.id).length;
       const share = shareCount > 0 ? item.cost / shareCount : 0;
       const tags = [item.name, shareCount > 1 ? "shared" : "", item.taxExempt ? "no tax" : ""]
-        .filter(Boolean).join("  ·  ");
+        .filter(Boolean)
+        .join("  ·  ");
       lines.push(`  $${share.toFixed(2)}${tags ? "  " + tags : ""}`);
     });
     const taxAmt = personTaxableSubtotal(p.id) * (tax / 100);
@@ -64,8 +75,18 @@ export function buildTextLines(data: ExportData, detailed: boolean): string[] {
 }
 
 export function saveAsImage(data: ExportData, detailed: boolean): void {
-  const { persons, tax, fees, grandTotal, itemsTotal, personTotal, personTaxableSubtotal, itemsForPerson, splitsForItem } = data;
-  const W   = 440;
+  const {
+    persons,
+    tax,
+    fees,
+    grandTotal,
+    itemsTotal,
+    personTotal,
+    personTaxableSubtotal,
+    itemsForPerson,
+    splitsForItem,
+  } = data;
+  const W = 440;
   const pad = 28;
   const ind = 16;
 
@@ -82,15 +103,24 @@ export function saveAsImage(data: ExportData, detailed: boolean): void {
 
   const rowHeight = (r: RowSpec): number => {
     switch (r.k) {
-      case "title":        return 38;
-      case "divider":      return 16;
-      case "spacer":       return 8;
-      case "person-name":  return 26;
-      case "item":         return 20;
-      case "addon":        return 18;
-      case "person-total": return 24;
-      case "grand-total":  return 32;
-      case "footnote":     return 20;
+      case "title":
+        return 38;
+      case "divider":
+        return 16;
+      case "spacer":
+        return 8;
+      case "person-name":
+        return 26;
+      case "item":
+        return 20;
+      case "addon":
+        return 18;
+      case "person-total":
+        return 24;
+      case "grand-total":
+        return 32;
+      case "footnote":
+        return 20;
     }
   };
 
@@ -101,9 +131,14 @@ export function saveAsImage(data: ExportData, detailed: boolean): void {
     rows.push({ k: "grand-total", amount: grandTotal });
     if (tax > 0) {
       const pct = tax % 1 === 0 ? tax.toFixed(0) : tax.toFixed(2);
-      rows.push({ k: "footnote", label: "Tax", value: `${pct}%  ($${(itemsTotal * tax / 100).toFixed(2)})` });
+      rows.push({
+        k: "footnote",
+        label: "Tax",
+        value: `${pct}%  ($${((itemsTotal * tax) / 100).toFixed(2)})`,
+      });
     }
-    if (fees > 0) rows.push({ k: "footnote", label: "Tip / Charges", value: `$${fees.toFixed(2)}` });
+    if (fees > 0)
+      rows.push({ k: "footnote", label: "Tip / Charges", value: `$${fees.toFixed(2)}` });
   };
 
   if (!detailed) {
@@ -120,16 +155,25 @@ export function saveAsImage(data: ExportData, detailed: boolean): void {
       itemsForPerson(p.id).forEach((item) => {
         const shareCount = splitsForItem(item.id).length;
         const share = shareCount > 0 ? item.cost / shareCount : 0;
-        rows.push({ k: "item", price: share, label: item.name, shared: shareCount > 1, exempt: item.taxExempt });
+        rows.push({
+          k: "item",
+          price: share,
+          label: item.name,
+          shared: shareCount > 1,
+          exempt: item.taxExempt,
+        });
       });
 
       const taxAmt = personTaxableSubtotal(p.id) * (tax / 100);
       if (tax > 0 && taxAmt > 0)
-        rows.push({ k: "addon", label: `tax (${tax % 1 === 0 ? tax.toFixed(0) : tax.toFixed(1)}%)`, amount: taxAmt });
+        rows.push({
+          k: "addon",
+          label: `tax (${tax % 1 === 0 ? tax.toFixed(0) : tax.toFixed(1)}%)`,
+          amount: taxAmt,
+        });
 
       const feeAmt = persons.length > 0 ? fees / persons.length : 0;
-      if (fees > 0)
-        rows.push({ k: "addon", label: "tip / charges", amount: feeAmt });
+      if (fees > 0) rows.push({ k: "addon", label: "tip / charges", amount: feeAmt });
 
       rows.push({ k: "person-total", amount: personTotal(p.id) });
     });
@@ -139,7 +183,7 @@ export function saveAsImage(data: ExportData, detailed: boolean): void {
   const totalH = rows.reduce((s, r) => s + rowHeight(r), 0) + pad * 2;
 
   const canvas = document.createElement("canvas");
-  canvas.width  = W;
+  canvas.width = W;
   canvas.height = totalH;
   const ctx = canvas.getContext("2d")!;
 

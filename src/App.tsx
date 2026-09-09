@@ -7,14 +7,14 @@ import type { SplitMode } from "./types";
 // Muted, hand-picked hues — distinct without being garish
 
 const PERSON_COLORS = [
-  '#6272a0', // slate indigo
-  '#b56d4a', // terracotta
-  '#4d8b6a', // sage
-  '#7a5f8a', // dusty plum
-  '#4a7ea8', // steel blue
-  '#9e7c40', // warm ochre
-  '#3d8282', // deep teal
-  '#8a5050', // muted burgundy
+  "#6272a0", // slate indigo
+  "#b56d4a", // terracotta
+  "#4d8b6a", // sage
+  "#7a5f8a", // dusty plum
+  "#4a7ea8", // steel blue
+  "#9e7c40", // warm ochre
+  "#3d8282", // deep teal
+  "#8a5050", // muted burgundy
 ];
 
 function personColor(index: number): string {
@@ -180,7 +180,6 @@ function App() {
   return (
     <div className={dark ? "dark" : ""}>
       <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-200">
-
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <header className="sticky top-0 z-20 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -212,12 +211,13 @@ function App() {
         </header>
 
         <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-
           {/* ── People ─────────────────────────────────────────────────────── */}
           <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
             <div className="px-5 pt-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
               <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">People</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Add everyone at the table</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                Add everyone at the table
+              </p>
             </div>
 
             <div className="px-5 py-4 space-y-4">
@@ -264,7 +264,12 @@ function App() {
                           title={`Remove ${p.name}`}
                         >
                           <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
-                            <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                            <path
+                              d="M2 2l6 6M8 2L2 8"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
                           </svg>
                         </button>
                       </span>
@@ -311,8 +316,18 @@ function App() {
                           </span>
                           {p.name}
                           {selected && (
-                            <svg className="w-3.5 h-3.5 ml-0.5 opacity-70" viewBox="0 0 14 11" fill="none">
-                              <path d="M1 5.5l4 4L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <svg
+                              className="w-3.5 h-3.5 ml-0.5 opacity-70"
+                              viewBox="0 0 14 11"
+                              fill="none"
+                            >
+                              <path
+                                d="M1 5.5l4 4L13 1"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
                             </svg>
                           )}
                         </button>
@@ -356,7 +371,9 @@ function App() {
                 <div className="flex items-center h-9 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 overflow-hidden flex-shrink-0">
                   <button
                     type="button"
-                    onClick={() => setItemQty((v) => String(Math.max(1, (parseInt(v, 10) || 1) - 1)))}
+                    onClick={() =>
+                      setItemQty((v) => String(Math.max(1, (parseInt(v, 10) || 1) - 1)))
+                    }
                     className="w-7 h-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors text-base leading-none select-none"
                   >
                     −
@@ -424,8 +441,8 @@ function App() {
                             ? allOnItem
                               ? "border-zinc-400 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-800 cursor-pointer"
                               : someOnItem
-                              ? "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
-                              : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
+                                ? "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
+                                : "border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
                             : "border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900"
                         }`}
                       >
@@ -436,8 +453,8 @@ function App() {
                               allOnItem
                                 ? "bg-zinc-900 dark:bg-zinc-100 border-zinc-900 dark:border-zinc-100"
                                 : someOnItem
-                                ? "border-zinc-400 dark:border-zinc-500 bg-white dark:bg-zinc-900"
-                                : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900"
+                                  ? "border-zinc-400 dark:border-zinc-500 bg-white dark:bg-zinc-900"
+                                  : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900"
                             }`}
                           >
                             {allOnItem && (
@@ -568,7 +585,9 @@ function App() {
           {store.items.length > 0 && (
             <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
               <div className="px-5 pt-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Tax & Tip</h2>
+                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Tax & Tip
+                </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                   Set amounts and choose how they're split
                 </p>
@@ -677,8 +696,12 @@ function App() {
           {store.persons.length > 0 && store.items.length > 0 && (
             <section className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
               <div className="px-5 pt-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Breakdown</h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">What everyone owes</p>
+                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Breakdown
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                  What everyone owes
+                </p>
               </div>
 
               {/* Person cards grid */}
@@ -729,7 +752,10 @@ function App() {
                             const n = store.splitsForItem(item.id).length;
                             const share = n > 0 ? item.cost / n : 0;
                             return (
-                              <div key={item.id} className="flex justify-between items-baseline gap-2">
+                              <div
+                                key={item.id}
+                                className="flex justify-between items-baseline gap-2"
+                              >
                                 <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                                   {item.name || "Item"}
                                   {n > 1 && (
@@ -755,19 +781,27 @@ function App() {
                       {personItems.length > 0 && hasAddons && (
                         <div className="px-3.5 py-2 border-t border-zinc-100 dark:border-zinc-800 space-y-0.5 mt-auto">
                           <div className="flex justify-between items-baseline">
-                            <span className="text-xs text-zinc-400 dark:text-zinc-500">Subtotal</span>
-                            <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">${fmt(subtotal)}</span>
+                            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                              Subtotal
+                            </span>
+                            <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+                              ${fmt(subtotal)}
+                            </span>
                           </div>
                           {taxShare > 0 && (
                             <div className="flex justify-between items-baseline">
                               <span className="text-xs text-zinc-400 dark:text-zinc-500">Tax</span>
-                              <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">+${fmt(taxShare)}</span>
+                              <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+                                +${fmt(taxShare)}
+                              </span>
                             </div>
                           )}
                           {tipShare > 0 && (
                             <div className="flex justify-between items-baseline">
                               <span className="text-xs text-zinc-400 dark:text-zinc-500">Tip</span>
-                              <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">+${fmt(tipShare)}</span>
+                              <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+                                +${fmt(tipShare)}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -781,7 +815,9 @@ function App() {
               <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40">
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Grand Total</span>
+                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                      Grand Total
+                    </span>
                     {(store.taxAmount > 0 || store.tipAmount > 0) && (
                       <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
                         {store.allItemsCost > 0 && `$${fmt(store.allItemsCost)} items`}

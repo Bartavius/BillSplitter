@@ -10,7 +10,14 @@ interface Props {
   removePerson: (personId: number) => void;
 }
 
-export function PersonCards({ persons, itemsForPerson, splitsForItem, personSubtotal, unlinkPerson, removePerson }: Props) {
+export function PersonCards({
+  persons,
+  itemsForPerson,
+  splitsForItem,
+  personSubtotal,
+  unlinkPerson,
+  removePerson,
+}: Props) {
   if (persons.length === 0) return null;
 
   return (
@@ -18,7 +25,10 @@ export function PersonCards({ persons, itemsForPerson, splitsForItem, personSubt
       {persons.map((person) => {
         const myItems = itemsForPerson(person.id);
         return (
-          <Card key={person.id} className="px-4 py-3 min-w-[140px] dark:bg-zinc-800 dark:border dark:border-zinc-700">
+          <Card
+            key={person.id}
+            className="px-4 py-3 min-w-[140px] dark:bg-zinc-800 dark:border dark:border-zinc-700"
+          >
             <div className="flex flex-row justify-between items-center mb-1">
               <h2 className="text-base font-bold mr-3">{person.name}</h2>
               <button
@@ -30,8 +40,8 @@ export function PersonCards({ persons, itemsForPerson, splitsForItem, personSubt
             </div>
             {myItems.map((item) => {
               const shareCount = splitsForItem(item.id).length;
-              const share      = shareCount > 0 ? item.cost / shareCount : 0;
-              const isShared   = shareCount > 1;
+              const share = shareCount > 0 ? item.cost / shareCount : 0;
+              const isShared = shareCount > 1;
               return (
                 <div
                   key={item.id}
@@ -41,9 +51,7 @@ export function PersonCards({ persons, itemsForPerson, splitsForItem, personSubt
                   <span className="text-xs font-semibold text-green-600 tabular-nums text-right">
                     ${share.toFixed(2)}
                   </span>
-                  <span className="text-xs text-gray-400 truncate">
-                    {item.name}
-                  </span>
+                  <span className="text-xs text-gray-400 truncate">{item.name}</span>
                   <span className={`text-xs text-gray-300 ${isShared ? "" : "invisible"}`}>
                     shared
                   </span>
