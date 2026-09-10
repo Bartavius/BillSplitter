@@ -24,7 +24,12 @@ export function PersonChip({
         className="ml-0.5 w-5 h-5 rounded-full flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors flex-shrink-0"
       >
         <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
-          <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path
+            d="M2 2l6 6M8 2L2 8"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
         </svg>
       </button>
     </span>

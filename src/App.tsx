@@ -56,9 +56,7 @@ function App() {
 
           {store.items.length > 0 && <TaxTipSection store={store} />}
 
-          {store.persons.length > 0 && store.items.length > 0 && (
-            <BreakdownSection store={store} />
-          )}
+          {store.persons.length > 0 && store.items.length > 0 && <BreakdownSection store={store} />}
 
           <Footer />
         </main>

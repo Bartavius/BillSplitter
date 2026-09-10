@@ -53,10 +53,10 @@ export interface BillStore {
   personTipShare: (personId: number) => number;
   personTotal: (personId: number) => number;
   grandTotal: number;
-  itemsTotal: number;        // taxable items total — for tax $ ↔ % conversion
-  allItemsCost: number;      // all items total — for tip $ ↔ % conversion
-  taxAmount: number;         // computed tax in dollars
-  tipAmount: number;         // computed tip in dollars
+  itemsTotal: number; // taxable items total — for tax $ ↔ % conversion
+  allItemsCost: number; // all items total — for tip $ ↔ % conversion
+  taxAmount: number; // computed tax in dollars
+  tipAmount: number; // computed tip in dollars
 
   // Reset
   clearAll: () => void;

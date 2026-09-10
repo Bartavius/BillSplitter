@@ -48,7 +48,9 @@ export function TaxTipRow({
           placeholder="0"
           suffix="%"
         />
-        <span className="text-zinc-300 dark:text-zinc-600 text-sm select-none flex-shrink-0">=</span>
+        <span className="text-zinc-300 dark:text-zinc-600 text-sm select-none flex-shrink-0">
+          =
+        </span>
         <NumericInput
           className="flex-1 min-w-0"
           ariaLabel={`${label} amount`}

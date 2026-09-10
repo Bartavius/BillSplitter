@@ -35,7 +35,11 @@ export function PersonSelector({
       <Avatar name={person.name} color={color} />
       <span className="truncate">{person.name}</span>
       {selected && (
-        <svg className="w-3.5 h-3.5 ml-0.5 opacity-70 flex-shrink-0" viewBox="0 0 14 11" fill="none">
+        <svg
+          className="w-3.5 h-3.5 ml-0.5 opacity-70 flex-shrink-0"
+          viewBox="0 0 14 11"
+          fill="none"
+        >
           <path
             d="M1 5.5l4 4L13 1"
             stroke="currentColor"
