@@ -102,12 +102,13 @@ export function AddItemForm({ onAdd }: { onAdd: (name: string, rowPrices: number
             value={price}
             onChange={(e) => setPrice(sanitizeDecimal(e.target.value))}
             onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder={isTotal ? "Total price" : "Price per item"}
+            // Short enough to fit beside the stepper on a 360px phone
+            placeholder={isTotal ? "Total" : "Per item"}
             className={`w-full pl-7 pr-3 tabular-nums ${INPUT_CLASS}`}
           />
         </div>
         <button onClick={submit} disabled={!canAdd} className={PRIMARY_BUTTON_CLASS}>
-          Add item
+          Add<span className="hidden sm:inline"> item</span>
         </button>
       </div>
 

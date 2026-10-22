@@ -16,7 +16,7 @@ export function PersonSelector({
   return (
     <button
       onClick={onToggle}
-      className="flex items-center gap-2 max-w-full min-h-[44px] px-3 py-2 rounded-xl border text-sm font-medium transition-all duration-150"
+      className="flex items-center gap-2 flex-shrink-0 max-w-[12rem] min-h-[44px] px-3 py-2 rounded-xl border text-sm font-medium transition-all duration-150"
       style={
         selected
           ? {
