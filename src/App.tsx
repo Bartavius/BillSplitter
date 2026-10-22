@@ -46,13 +46,16 @@ function App() {
         <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
           <PeopleSection
             persons={store.persons}
-            selectedIds={selected}
             onAdd={store.addPerson}
             onRemove={handleRemovePerson}
-            onToggleSelect={toggle}
           />
 
-          <ItemsSection store={store} selectedIds={selected} />
+          <ItemsSection
+            store={store}
+            selectedIds={selected}
+            onToggleSelect={toggle}
+            onClearSelection={clear}
+          />
 
           {store.items.length > 0 && <TaxTipSection store={store} />}
 
