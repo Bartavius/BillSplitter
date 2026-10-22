@@ -45,12 +45,12 @@ export function AddItemForm({
           <input
             type="text"
             inputMode="decimal"
-            aria-label="Unit price"
+            aria-label="Price per item"
             autoComplete="off"
             value={price}
             onChange={(e) => setPrice(sanitizeDecimal(e.target.value))}
             onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder="0.00"
+            placeholder="Price per item"
             className={`w-full pl-7 pr-3 tabular-nums ${INPUT_CLASS}`}
           />
         </div>

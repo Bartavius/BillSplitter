@@ -9,7 +9,7 @@ export interface Item {
   id: number;
   name: string; // empty string = no label
   cost: number; // total cost = unitPrice × quantity
-  quantity: number; // default 1
+  quantity: number; // always 1 for new items (multi-qty adds split into rows); >1 only on legacy saves
   taxExempt: boolean;
 }
 
