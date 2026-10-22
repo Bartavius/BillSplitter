@@ -100,15 +100,14 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   // ── Items ─────────────────────────────────────────────────────────────────
 
   // assignTo may be empty — items can exist without any assignment.
-  // A quantity > 1 becomes that many single-unit rows so each unit can be
-  // assigned to different people (e.g. 5 tacos: 2 for one person, 3 for another).
-  const addItem = (name: string, unitPrice: number, assignTo: number[], quantity = 1) => {
-    if (isNaN(unitPrice) || unitPrice <= 0) return;
-    const qty = Math.max(1, Math.round(quantity));
-    const newItems: Item[] = Array.from({ length: qty }, () => ({
+  // Each price becomes its own single-unit row so units can be assigned to
+  // different people (e.g. 5 tacos: 2 for one person, 3 for another).
+  const addItem = (name: string, rowPrices: number[], assignTo: number[]) => {
+    if (rowPrices.length === 0 || rowPrices.some((p) => isNaN(p) || p <= 0)) return;
+    const newItems: Item[] = rowPrices.map((cost) => ({
       id: newId(),
       name: name.trim(),
-      cost: unitPrice,
+      cost,
       quantity: 1,
       taxExempt: false,
     }));

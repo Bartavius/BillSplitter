@@ -15,8 +15,8 @@ export function ItemsSection({
   const colorFor = (personId: number) =>
     personColor(store.persons.findIndex((p) => p.id === personId));
 
-  const handleAdd = (name: string, unitPrice: number, quantity: number) =>
-    store.addItem(name, unitPrice, [...selectedIds], quantity);
+  const handleAdd = (name: string, rowPrices: number[]) =>
+    store.addItem(name, rowPrices, [...selectedIds]);
 
   // Clicking a row assigns every selected person, or clears them all if they're
   // already on the item.

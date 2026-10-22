@@ -34,7 +34,7 @@ export interface BillStore {
   removePerson: (personId: number) => void;
 
   // Item mutations
-  addItem: (name: string, unitPrice: number, assignTo: number[], quantity?: number) => void;
+  addItem: (name: string, rowPrices: number[], assignTo: number[]) => void; // one row per price
   removeItem: (itemId: number) => void;
   unlinkPerson: (itemId: number, personId: number) => void;
   setItemSplit: (itemId: number, personId: number, included: boolean) => void;
