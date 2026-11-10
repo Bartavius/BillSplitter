@@ -1,5 +1,9 @@
 export type SplitMode = "proportional" | "even";
 
+// A discount keeps the unit it was entered in, so "$10 off" stays $10 when
+// items change and "20% off" stays 20%.
+export type DiscountKind = "percent" | "amount";
+
 export interface Person {
   id: number;
   name: string;

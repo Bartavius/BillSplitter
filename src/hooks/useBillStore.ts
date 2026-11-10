@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Item, Person, Split, SplitMode } from "../types";
+import type { DiscountKind, Item, Person, Split, SplitMode } from "../types";
 import type { BillStore } from "../store/BillStore";
 import type { BillRepository } from "../store/BillRepository";
 import { LocalStorageRepository } from "../store/LocalStorageRepository";
@@ -11,6 +11,8 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   const [items, setItems] = useState<Item[]>([]);
   const [splits, setSplits] = useState<Split[]>([]);
   const [nameSet, setNameSet] = useState<Set<string>>(new Set());
+  const [discount, setDiscountValue] = useState(0);
+  const [discountKind, setDiscountKind] = useState<DiscountKind>("percent");
   const [tax, setTax] = useState(0);
   const [taxMode, setTaxMode] = useState<SplitMode>("proportional");
   const [tip, setTip] = useState(0);
@@ -31,6 +33,8 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
         setItems(saved.items.map((i) => ({ ...i, quantity: i.quantity ?? 1 })));
         setSplits(saved.splits);
         setNameSet(new Set(saved.persons.map((p) => p.name.toLowerCase())));
+        setDiscountValue(saved.discount ?? 0);
+        setDiscountKind(saved.discountKind ?? "percent");
         setTax(saved.tax ?? 0);
         setTaxMode(saved.taxMode ?? "proportional");
         setTip(saved.tip ?? 0);
@@ -46,9 +50,20 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   useEffect(() => {
     if (!initialized.current) return;
     repo
-      .save({ persons, items, splits, tax, taxMode, tip, tipMode, nextId: nextId.current })
+      .save({
+        persons,
+        items,
+        splits,
+        discount,
+        discountKind,
+        tax,
+        taxMode,
+        tip,
+        tipMode,
+        nextId: nextId.current,
+      })
       .catch(console.error);
-  }, [persons, items, splits, tax, taxMode, tip, tipMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [persons, items, splits, discount, discountKind, tax, taxMode, tip, tipMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Queries ──────────────────────────────────────────────────────────────
 
@@ -158,12 +173,31 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
 
   const itemsTotal = items.filter((i) => !i.taxExempt).reduce((sum, i) => sum + i.cost, 0);
   const allItemsCost = items.reduce((sum, i) => sum + i.cost, 0);
-  const taxAmount = itemsTotal * (tax / 100);
-  const tipAmount = allItemsCost * (tip / 100);
+
+  // The discount takes the same fraction off every item, before tax and tip,
+  // so everyone saves in proportion to what they ordered and nobody goes negative.
+  const discountAmount = Math.min(
+    discountKind === "percent" ? allItemsCost * (discount / 100) : discount,
+    allItemsCost,
+  );
+  const keptFraction = allItemsCost > 0 ? 1 - discountAmount / allItemsCost : 1;
+
+  const taxBase = itemsTotal * keptFraction;
+  const tipBase = allItemsCost - discountAmount;
+  const taxAmount = taxBase * (tax / 100);
+  const tipAmount = tipBase * (tip / 100);
+
+  const setDiscount = (value: number, kind: DiscountKind) => {
+    setDiscountValue(kind === "percent" ? Math.min(value, 100) : value);
+    setDiscountKind(kind);
+  };
+
+  const personDiscountShare = (personId: number): number =>
+    personSubtotal(personId) * (1 - keptFraction);
 
   const personTaxShare = (personId: number): number => {
     if (taxMode === "proportional") {
-      return personTaxableSubtotal(personId) * (tax / 100);
+      return personTaxableSubtotal(personId) * keptFraction * (tax / 100);
     }
     // even split
     return persons.length > 0 ? taxAmount / persons.length : 0;
@@ -179,7 +213,10 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
   };
 
   const personTotal = (personId: number): number =>
-    personSubtotal(personId) + personTaxShare(personId) + personTipShare(personId);
+    personSubtotal(personId) -
+    personDiscountShare(personId) +
+    personTaxShare(personId) +
+    personTipShare(personId);
 
   const grandTotal = persons.reduce((sum, p) => sum + personTotal(p.id), 0);
 
@@ -190,6 +227,8 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     setItems([]);
     setSplits([]);
     setNameSet(new Set());
+    setDiscountValue(0);
+    setDiscountKind("percent");
     setTax(0);
     setTaxMode("proportional");
     setTip(0);
@@ -202,6 +241,9 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     persons,
     items,
     splits,
+    discount,
+    discountKind,
+    setDiscount,
     tax,
     setTax,
     taxMode,
@@ -223,12 +265,16 @@ export function useBillStore(repo: BillRepository = defaultRepo): BillStore {
     itemsForPerson,
     personSubtotal,
     personTaxableSubtotal,
+    personDiscountShare,
     personTaxShare,
     personTipShare,
     personTotal,
     grandTotal,
     itemsTotal,
     allItemsCost,
+    discountAmount,
+    taxBase,
+    tipBase,
     taxAmount,
     tipAmount,
     clearAll,

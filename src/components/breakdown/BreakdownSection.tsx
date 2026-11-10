@@ -21,9 +21,10 @@ export function BreakdownSection({ store }: { store: BillStore }) {
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
               Grand Total
             </span>
-            {(store.taxAmount > 0 || store.tipAmount > 0) && (
+            {(store.discountAmount > 0 || store.taxAmount > 0 || store.tipAmount > 0) && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
                 {store.allItemsCost > 0 && `$${fmt(store.allItemsCost)} items`}
+                {store.discountAmount > 0 && ` − $${fmt(store.discountAmount)} off`}
                 {store.taxAmount > 0 && ` + $${fmt(store.taxAmount)} tax`}
                 {store.tipAmount > 0 && ` + $${fmt(store.tipAmount)} tip`}
               </p>
