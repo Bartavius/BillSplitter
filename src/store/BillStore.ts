@@ -1,4 +1,4 @@
-import type { Item, Person, Split, SplitMode } from "../types";
+import type { DiscountKind, Item, Person, Split, SplitMode } from "../types";
 
 // ── BillStore interface ───────────────────────────────────────────────────────
 //
@@ -20,6 +20,9 @@ export interface BillStore {
   splits: Split[];
 
   // Settings
+  discount: number; // percent or dollars, depending on discountKind
+  discountKind: DiscountKind;
+  setDiscount: (v: number, kind: DiscountKind) => void;
   tax: number;
   setTax: (v: number) => void;
   taxMode: SplitMode;
@@ -49,12 +52,16 @@ export interface BillStore {
   // Calculations
   personSubtotal: (personId: number) => number;
   personTaxableSubtotal: (personId: number) => number;
+  personDiscountShare: (personId: number) => number;
   personTaxShare: (personId: number) => number;
   personTipShare: (personId: number) => number;
   personTotal: (personId: number) => number;
   grandTotal: number;
-  itemsTotal: number; // taxable items total — for tax $ ↔ % conversion
-  allItemsCost: number; // all items total — for tip $ ↔ % conversion
+  itemsTotal: number; // taxable items total, before the discount
+  allItemsCost: number; // all items total, before the discount — for discount $ ↔ % conversion
+  discountAmount: number; // computed discount in dollars, never more than allItemsCost
+  taxBase: number; // taxable items after the discount — for tax $ ↔ % conversion
+  tipBase: number; // all items after the discount — for tip $ ↔ % conversion
   taxAmount: number; // computed tax in dollars
   tipAmount: number; // computed tip in dollars
 

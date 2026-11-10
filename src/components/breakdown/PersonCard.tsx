@@ -15,10 +15,11 @@ export function PersonCard({
 }) {
   const items = store.itemsForPerson(person.id);
   const subtotal = store.personSubtotal(person.id);
+  const discountShare = store.personDiscountShare(person.id);
   const taxShare = store.personTaxShare(person.id);
   const tipShare = store.personTipShare(person.id);
   const total = store.personTotal(person.id);
-  const hasAddons = taxShare > 0 || tipShare > 0;
+  const hasAddons = discountShare > 0 || taxShare > 0 || tipShare > 0;
 
   return (
     <div
@@ -72,6 +73,7 @@ export function PersonCard({
       {items.length > 0 && hasAddons && (
         <div className="px-3.5 py-2 border-t border-zinc-100 dark:border-zinc-800 space-y-0.5 mt-auto">
           <AddonRow label="Subtotal" value={`$${fmt(subtotal)}`} />
+          {discountShare > 0 && <AddonRow label="Discount" value={`−$${fmt(discountShare)}`} />}
           {taxShare > 0 && <AddonRow label="Tax" value={`+$${fmt(taxShare)}`} />}
           {tipShare > 0 && <AddonRow label="Tip" value={`+$${fmt(tipShare)}`} />}
         </div>

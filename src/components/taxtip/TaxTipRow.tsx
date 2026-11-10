@@ -16,6 +16,7 @@ export function TaxTipRow({
   mode,
   onPercentChange,
   onModeChange,
+  onAmountChange,
   hint,
 }: {
   label: string;
@@ -23,13 +24,16 @@ export function TaxTipRow({
   amount: number;
   base: number;
   presets: number[];
-  mode: SplitMode;
+  mode?: SplitMode;
   onPercentChange: (n: number) => void;
-  onModeChange: (m: SplitMode) => void;
+  onModeChange?: (m: SplitMode) => void;
+  /** Keeps a typed dollar amount as dollars instead of turning it into a percent */
+  onAmountChange?: (n: number) => void;
   hint: string;
 }) {
   const commitDollars = (n: number) => {
-    if (base > 0) onPercentChange((n / base) * 100);
+    if (onAmountChange) onAmountChange(n);
+    else if (base > 0) onPercentChange((n / base) * 100);
     else if (n === 0) onPercentChange(0);
   };
 
@@ -37,7 +41,7 @@ export function TaxTipRow({
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</label>
-        <SplitModeToggle value={mode} onChange={onModeChange} />
+        {mode && onModeChange && <SplitModeToggle value={mode} onChange={onModeChange} />}
       </div>
       <div className="flex items-center gap-2">
         <NumericInput
