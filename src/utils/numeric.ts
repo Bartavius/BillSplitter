@@ -1,3 +1,5 @@
+import type { PriceMode } from "../types";
+
 // Amount fields are plain text with a decimal keypad — `type="number"` fights the
 // user on mobile (rejected keystrokes, spinners, locale quirks). We only strip
 // characters that could never belong in an amount, and leave partial entries
@@ -21,6 +23,14 @@ export function splitEvenly(total: number, n: number): number[] {
   const base = Math.floor(cents / n);
   const extra = cents - base * n;
   return Array.from({ length: n }, (_, i) => (base + (i < extra ? 1 : 0)) / 100);
+}
+
+// One price per unit: the amount repeated, or a line total split to the cent
+export function rowPrices(amount: number, quantity: number, mode: PriceMode): number[] {
+  if (!(amount > 0)) return [];
+  return mode === "total" && quantity > 1
+    ? splitEvenly(amount, quantity)
+    : Array.from({ length: quantity }, () => amount);
 }
 
 // Parses a partially-typed amount; "" and "." both read as 0

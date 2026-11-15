@@ -1,10 +1,13 @@
 import type { BillStore } from "../../store/BillStore";
 import { personColor } from "../../utils/color";
 import { fmt } from "../../utils/format";
+import { splitEvenly } from "../../utils/numeric";
+import type { ScannedReceipt } from "../../utils/receipt";
 import { SelectionBar } from "../people/SelectionBar";
 import { Section } from "../ui/Section";
 import { AddItemForm } from "./AddItemForm";
 import { ItemRow } from "./ItemRow";
+import { ReceiptScanner } from "./ReceiptScanner";
 
 export function ItemsSection({
   store,
@@ -23,6 +26,24 @@ export function ItemsSection({
   const handleAdd = (name: string, rowPrices: number[]) =>
     store.addItem(name, rowPrices, [...selectedIds]);
 
+  // Scanned items go in unassigned — a whole receipt rarely belongs to whoever
+  // happens to be selected. Tax and tip are stored as percents, taken over the
+  // same base the store uses (items after the discount), so they come back out
+  // as the receipt's dollar amounts.
+  const handleScanned = (receipt: ScannedReceipt) => {
+    for (const item of receipt.items) {
+      store.addItem(item.name, splitEvenly(item.total, item.quantity), []);
+    }
+    const discount = receipt.discount ?? 0;
+    const itemsSum = receipt.items.reduce((s, i) => s + i.total, 0);
+    const base = receipt.items.length > 0 ? itemsSum - discount : (receipt.subtotal ?? 0);
+    if (discount > 0) store.setDiscount(discount, "amount");
+    if (base > 0) {
+      if (receipt.tax) store.setTax((receipt.tax / base) * 100);
+      if (receipt.tip) store.setTip((receipt.tip / base) * 100);
+    }
+  };
+
   // Clicking a row assigns every selected person, or clears them all if they're
   // already on the item.
   const handleToggleAssignment = (itemId: number) => {
@@ -39,6 +60,7 @@ export function ItemsSection({
     <div>
       <Section title="Bill Items" subtitle="Enter each item, then tap who ordered it">
         <div className="px-4 sm:px-5 py-4 space-y-3">
+          <ReceiptScanner onApply={handleScanned} />
           <AddItemForm onAdd={handleAdd} />
 
           {store.items.length > 0 && (

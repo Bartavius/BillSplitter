@@ -4,6 +4,10 @@ export type SplitMode = "proportional" | "even";
 // items change and "20% off" stays 20%.
 export type DiscountKind = "percent" | "amount";
 
+// Receipts print a multi-quantity line either as the price of one unit or as
+// the line total, so a price can be read either way.
+export type PriceMode = "each" | "total";
+
 export interface Person {
   id: number;
   name: string;
